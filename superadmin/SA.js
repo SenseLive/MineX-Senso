@@ -867,13 +867,13 @@ monitorAndSyncDevices();
                 console.error(`Error deleting old company data for ${companyName}:`, err);
                 return;
               }
-    
+              if(companyName != NULL){
               connection.query(insertCompanyDataQuery, [companyName, totalUsers, activeUsers, inactiveUsers], (err) => {
                 if (err) {
                   console.error(`Error inserting company data for ${companyName}:`, err);
                 }
-              
               });
+            }
             });
           });
         });
