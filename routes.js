@@ -54,6 +54,8 @@ router.get('/ConsuptionByCustomBar/:deviceId/:startDate/:endDate', dashboard.get
 
 router.delete('/delete-device/:deviceUID', dashboard.deleteDevice);
 router.put('/edit-User/:userId', dashboard.editUser);
+router.get('/fetchLatestEntry/:companyEmail', dashboard.fetchLatestEntry);
+
 //SA
 router.get('/fetchAllDevices', SA.fetchAllDevices);
 router.get('/fetchAllUsers', SA.fetchAllUsers);

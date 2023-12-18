@@ -1266,6 +1266,48 @@ function editUser(req, res) {
   });
 }
 
+function fetchLatestEntry(req, res){
+  companyEmail = req.params.companyEmail;
+  const fetchCompanyEmailQuery =  `SELECT * FROM tms_devices WHERE CompanyEmail = ?`;
+
+  db.query(fetchCompanyEmailQuery, [companyEmail], (fetchCompanyEmailError, devices) => {
+    if(fetchCompanyEmailError){
+      console.error(fetchCompanyEmailError);
+      return res.status(401).json({message : "fetch company email error", fetchCompanyEmailError});
+    }
+
+    const lastEntry = [];
+
+    devices.forEach(device => {
+      const deviceId = device.DeviceUID;
+
+      try{
+        const fetchLastEntryQuery = `Select * FROM actual_data WHERE DeviceUID = ? ORDER BY TimeStamp DESC LIMIT 1`;
+
+        db.query(fetchLastEntryQuery, [deviceId], (fetchLastEntryError, latestEntry) =>{
+          if(fetchLastEntryError){
+            console.error('Error while fetching latest entry', fetchLastEntryError);
+            return res.status(401).json({message : "error while fetching latest enrty", fetchLastEntryError});
+          }
+          const todayConsumption = latestEntry ;
+          lastEntry.push({
+            [device.DeviceUID]:[
+              {
+                today : todayConsumption 
+              }
+            ]
+          });
+          if(lastEntry.length === devices.length){
+            return res.json(lastEntry);
+          }
+        });
+      }catch(error){
+        return res.status(500).json({message : 'Internal Server Error'});
+      }
+    });
+  });
+}
+
 module.exports = {
   userDevices,
   editDevice,
@@ -1299,4 +1341,5 @@ module.exports = {
   getWaterConsumptionForDateRange,
   deleteDevice,
   editUser,
+  fetchLatestEntry,
 };
